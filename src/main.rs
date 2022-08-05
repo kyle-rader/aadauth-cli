@@ -26,7 +26,27 @@ enum Args {
 }
 
 fn translate(args: Args) -> Vec<String> {
-    todo!()
+    match args {
+        Args::Auth(Target {
+            scopes,
+            client,
+            tenant,
+        }) => vec![
+            String::from("--client"),
+            client,
+            String::from("--resource"),
+            String::from(""),
+            String::from("--scopes"),
+            scopes[0].clone(),
+            String::from("--tenant"),
+            tenant,
+        ],
+        Args::Clear(Target {
+            scopes,
+            client,
+            tenant,
+        }) => vec![],
+    }
 }
 
 fn main() {
