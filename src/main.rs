@@ -1,16 +1,38 @@
+use std::process::Command;
+
 use clap::Parser;
 
 #[derive(Debug, Parser)]
 struct Target {
-    /// Scopes to request
-    #[clap(long, required = true)]
-    scopes: Vec<String>,
     /// Client ID
     #[clap(long)]
     client: String,
     /// Tenant ID
     #[clap(long)]
     tenant: String,
+    /// Scopes to request
+    #[clap(long, required = true)]
+    scopes: Vec<String>,
+}
+
+impl From<Target> for Vec<String> {
+    fn from(target: Target) -> Self {
+        let mut args = vec![
+            String::from("--client"),
+            target.client,
+            String::from("--tenant"),
+            target.tenant,
+            String::from("--resource"),
+            String::from(""),
+        ];
+
+        for scope in target.scopes {
+            args.push(String::from("--scopes"));
+            args.push(scope);
+        }
+
+        args
+    }
 }
 
 /// Do Auth Well
@@ -25,66 +47,19 @@ enum Args {
 
 fn translate(args: Args) -> Vec<String> {
     match args {
-        Args::Auth(Target {
-            scopes,
-            client,
-            tenant,
-        }) => {
-            let mut result = vec![
-                String::from("--client"),
-                client,
-                String::from("--tenant"),
-                tenant,
-                String::from("--resource"),
-                String::from(""),
-            ];
-
-            for scope in scopes {
-                result.push(String::from("--scopes"));
-                result.push(scope);
-            }
-
-            result
-        }
-        Args::Clear(Target {
-            scopes,
-            client,
-            tenant,
-        }) => {
-            let mut result = vec![
-                String::from("--client"),
-                client,
-                String::from("--tenant"),
-                tenant,
-                String::from("--resource"),
-                String::from(""),
-            ];
-
-            for scope in scopes {
-                result.push(String::from("--scopes"));
-                result.push(scope);
-            }
-
-            result.push(String::from("--clear"));
-
-            result
+        Args::Auth(target) => target.into(),
+        Args::Clear(target) => {
+            let mut args: Vec<String> = target.into();
+            args.push(String::from("--clear"));
+            args
         }
     }
 }
 
 fn main() {
-    match Args::parse() {
-        Args::Auth(Target {
-            scopes,
-            client,
-            tenant,
-        }) => println!("We're going to auth with c:{client}, s:{scopes:?}, in t:{tenant}"),
-        Args::Clear(Target {
-            scopes,
-            client,
-            tenant,
-        }) => println!("We're going to clear tokens for c:{client}, s:{scopes:?}, in t:{tenant}"),
-    }
+    Command::new("azureauth")
+        .args(translate(Args::parse()))
+        .spawn();
 }
 
 #[cfg(test)]
