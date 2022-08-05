@@ -52,7 +52,25 @@ fn translate(args: Args) -> Vec<String> {
             scopes,
             client,
             tenant,
-        }) => vec![],
+        }) => {
+            let mut result = vec![
+                String::from("--client"),
+                client,
+                String::from("--tenant"),
+                tenant,
+                String::from("--resource"),
+                String::from(""),
+            ];
+
+            for scope in scopes {
+                result.push(String::from("--scopes"));
+                result.push(scope);
+            }
+
+            result.push(String::from("--clear"));
+
+            result
+        }
     }
 }
 
@@ -118,7 +136,7 @@ mod tests {
             tenant: String::from("contoso"),
         });
 
-        let expected = vec![
+        let expected = &[
             "--client",
             "foo",
             "--tenant",
@@ -129,6 +147,30 @@ mod tests {
             "scope1",
             "--scopes",
             "scope2",
+        ];
+
+        let subject = translate(args);
+        assert_eq!(subject, expected);
+    }
+
+    #[test]
+    fn clear_command() {
+        let args = Args::Clear(Target {
+            scopes: vec![String::from("s1")],
+            client: String::from("foo"),
+            tenant: String::from("contoso"),
+        });
+
+        let expected = &[
+            "--client",
+            "foo",
+            "--tenant",
+            "contoso",
+            "--resource",
+            "",
+            "--scopes",
+            "s1",
+            "--clear",
         ];
 
         let subject = translate(args);
