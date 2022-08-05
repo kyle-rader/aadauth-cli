@@ -57,9 +57,16 @@ fn translate(args: Args) -> Vec<String> {
 }
 
 fn main() {
-    Command::new("azureauth")
-        .args(translate(Args::parse()))
-        .spawn();
+    let args = Args::parse();
+    let args = translate(args);
+    let result = Command::new("azureauth").args(args).spawn();
+
+    match result {
+        Ok(_) => {}
+        Err(err) => {
+            eprintln!("{err}");
+        }
+    }
 }
 
 #[cfg(test)]
