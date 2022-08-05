@@ -3,14 +3,14 @@ use clap::Parser;
 #[derive(Debug, Parser)]
 struct Target {
     /// Scopes to request
-    #[clap(long)]
-    scopes: Option<Vec<String>>,
+    #[clap(long, required = true)]
+    scopes: Vec<String>,
     /// Client ID
     #[clap(long)]
-    client: Option<String>,
+    client: String,
     /// Tenant ID
     #[clap(long)]
-    tenant: Option<String>,
+    tenant: String,
 }
 
 /// Do Auth Well
@@ -25,7 +25,15 @@ enum Args {
 
 fn main() {
     match Args::parse() {
-        Args::Auth(_) => println!("We're going to auth"),
-        Args::Clear(_) => println!("We're going to clear"),
+        Args::Auth(Target {
+            scopes,
+            client,
+            tenant,
+        }) => println!("We're going to auth with c:{client}, s:{scopes:?}, in t:{tenant}"),
+        Args::Clear(Target {
+            scopes,
+            client,
+            tenant,
+        }) => println!("We're going to clear tokens for c:{client}, s:{scopes:?}, in t:{tenant}"),
     }
 }
