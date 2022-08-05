@@ -46,24 +46,26 @@ fn main() {
 
 #[cfg(test)]
 mod tests {
-    use std::process::Command;
-
-    use clap::Parser;
-
-    use super::{translate, Args};
+    use super::{translate, Args, Target};
 
     #[test]
     fn auth_command() {
-        let args = Args::parse_from(&[
-            "azureauth",
-            "auth",
-            "--client",
-            "foo",
-            "--scopes",
-            "scope1",
-            "--tenant",
-            "contoso",
-        ]);
+        // let args = Args::parse_from(&[
+        //     "azureauth",
+        //     "auth",
+        //     "--client",
+        //     "foo",
+        //     "--scopes",
+        //     "scope1",
+        //     "--tenant",
+        //     "contoso",
+        // ]);
+
+        let args = Args::Auth(Target {
+            scopes: vec![String::from("scope1")],
+            client: String::from("foo"),
+            tenant: String::from("contoso"),
+        });
 
         let expected = vec![
             String::from("--client"),
