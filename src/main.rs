@@ -88,14 +88,14 @@ mod tests {
         });
 
         let expected = vec![
-            String::from("--client"),
-            String::from("foo"),
-            String::from("--resource"),
-            String::from(""),
-            String::from("--scopes"),
-            String::from("scope1"),
-            String::from("--tenant"),
-            String::from("contoso"),
+            "--client",
+            "foo",
+            "--resource",
+            "",
+            "--scopes",
+            "scope1",
+            "--tenant",
+            "contoso",
         ];
 
         let subject = translate(args);
