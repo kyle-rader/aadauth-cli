@@ -176,4 +176,30 @@ mod tests {
         let subject = translate(args);
         assert_eq!(subject, expected);
     }
+
+    #[test]
+    fn clear_command_many_scopes() {
+        let args = Args::Clear(Target {
+            scopes: vec![String::from("s1"), String::from("s2")],
+            client: String::from("foo"),
+            tenant: String::from("contoso"),
+        });
+
+        let expected = &[
+            "--client",
+            "foo",
+            "--tenant",
+            "contoso",
+            "--resource",
+            "",
+            "--scopes",
+            "s1",
+            "--scopes",
+            "s2",
+            "--clear",
+        ];
+
+        let subject = translate(args);
+        assert_eq!(subject, expected);
+    }
 }
