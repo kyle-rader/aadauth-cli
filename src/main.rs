@@ -1,5 +1,3 @@
-use std::process::Command;
-
 use clap::Parser;
 
 #[derive(Debug, Parser)]
@@ -94,35 +92,26 @@ mod tests {
     use super::{translate, Args, Target};
     use pretty_assertions::assert_eq;
 
+    const EXPECTED_BASE: [&str; 8] = [
+        "--client",
+        "foo",
+        "--tenant",
+        "contoso",
+        "--resource",
+        "",
+        "--scopes",
+        "s1",
+    ];
+
     #[test]
     fn auth_command() {
-        // let args = Args::parse_from(&[
-        //     "azureauth",
-        //     "auth",
-        //     "--client",
-        //     "foo",
-        //     "--scopes",
-        //     "scope1",
-        //     "--tenant",
-        //     "contoso",
-        // ]);
-
         let args = Args::Auth(Target {
-            scopes: vec![String::from("scope1")],
+            scopes: vec![String::from("s1")],
             client: String::from("foo"),
             tenant: String::from("contoso"),
         });
 
-        let expected = vec![
-            "--client",
-            "foo",
-            "--tenant",
-            "contoso",
-            "--resource",
-            "",
-            "--scopes",
-            "scope1",
-        ];
+        let expected = EXPECTED_BASE;
 
         let subject = translate(args);
         assert_eq!(subject, expected);
@@ -131,23 +120,13 @@ mod tests {
     #[test]
     fn auth_command_many_scopes() {
         let args = Args::Auth(Target {
-            scopes: vec![String::from("scope1"), String::from("scope2")],
+            scopes: vec![String::from("s1"), String::from("scope2")],
             client: String::from("foo"),
             tenant: String::from("contoso"),
         });
 
-        let expected = &[
-            "--client",
-            "foo",
-            "--tenant",
-            "contoso",
-            "--resource",
-            "",
-            "--scopes",
-            "scope1",
-            "--scopes",
-            "scope2",
-        ];
+        let mut expected = EXPECTED_BASE.to_vec();
+        expected.extend_from_slice(&["--scopes", "scope2"]);
 
         let subject = translate(args);
         assert_eq!(subject, expected);
@@ -161,17 +140,8 @@ mod tests {
             tenant: String::from("contoso"),
         });
 
-        let expected = &[
-            "--client",
-            "foo",
-            "--tenant",
-            "contoso",
-            "--resource",
-            "",
-            "--scopes",
-            "s1",
-            "--clear",
-        ];
+        let mut expected = EXPECTED_BASE.to_vec();
+        expected.push("--clear");
 
         let subject = translate(args);
         assert_eq!(subject, expected);
@@ -185,19 +155,8 @@ mod tests {
             tenant: String::from("contoso"),
         });
 
-        let expected = &[
-            "--client",
-            "foo",
-            "--tenant",
-            "contoso",
-            "--resource",
-            "",
-            "--scopes",
-            "s1",
-            "--scopes",
-            "s2",
-            "--clear",
-        ];
+        let mut expected = EXPECTED_BASE.to_vec();
+        expected.extend_from_slice(&["--scopes", "s2", "--clear"]);
 
         let subject = translate(args);
         assert_eq!(subject, expected);
