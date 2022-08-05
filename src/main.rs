@@ -31,16 +31,23 @@ fn translate(args: Args) -> Vec<String> {
             scopes,
             client,
             tenant,
-        }) => vec![
-            String::from("--client"),
-            client,
-            String::from("--resource"),
-            String::from(""),
-            String::from("--scopes"),
-            scopes[0].clone(),
-            String::from("--tenant"),
-            tenant,
-        ],
+        }) => {
+            let mut result = vec![
+                String::from("--client"),
+                client,
+                String::from("--tenant"),
+                tenant,
+                String::from("--resource"),
+                String::from(""),
+            ];
+
+            for scope in scopes {
+                result.push(String::from("--scopes"));
+                result.push(scope);
+            }
+
+            result
+        }
         Args::Clear(Target {
             scopes,
             client,
@@ -67,6 +74,7 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::{translate, Args, Target};
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn auth_command() {
@@ -90,12 +98,37 @@ mod tests {
         let expected = vec![
             "--client",
             "foo",
+            "--tenant",
+            "contoso",
             "--resource",
             "",
             "--scopes",
             "scope1",
+        ];
+
+        let subject = translate(args);
+        assert_eq!(subject, expected);
+    }
+
+    #[test]
+    fn auth_command_many_scopes() {
+        let args = Args::Auth(Target {
+            scopes: vec![String::from("scope1"), String::from("scope2")],
+            client: String::from("foo"),
+            tenant: String::from("contoso"),
+        });
+
+        let expected = vec![
+            "--client",
+            "foo",
             "--tenant",
             "contoso",
+            "--resource",
+            "",
+            "--scopes",
+            "scope1",
+            "--scopes",
+            "scope2",
         ];
 
         let subject = translate(args);
