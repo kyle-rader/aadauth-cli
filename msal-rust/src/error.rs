@@ -30,15 +30,12 @@ pub enum MsalError {
     #[error("Token validation failed: {0}")]
     TokenValidationError(String),
 
-    #[error("Browser launch failed: {0}")]
-    BrowserError(String),
-
-    #[error("Timeout waiting for authentication")]
-    TimeoutError,
-
-    #[error("User cancelled authentication")]
-    UserCancelled,
+    #[error("Network timeout: {0}")]
+    TimeoutError(String),
 
     #[error("IO error: {0}")]
     IoError(#[from] std::io::Error),
+
+    #[error("User cancelled authentication")]
+    UserCancelled,
 }
