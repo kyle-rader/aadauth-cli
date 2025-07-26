@@ -1,5 +1,5 @@
 [package]
-name = "authy"
+name = "aadauth"
 version = "0.1.0"
 edition = "2021"
 
@@ -7,6 +7,16 @@ edition = "2021"
 
 [dependencies]
 clap = { version = "3.2.16", features = ["derive"] }
+msal-rust = { path = "./msal-rust" }
+tokio = { version = "1.0", features = ["full"] }
+serde_json = "1.0"
 
 [dev-dependencies]
 pretty_assertions = "1.2.1"
+
+[workspace]
+members = ["msal-rust"]
+
+[[example]]
+name = "simple_auth"
+path = "examples/simple_auth.rs"
