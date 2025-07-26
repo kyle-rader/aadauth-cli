@@ -1,0 +1,15 @@
+[package]
+name = "aadauth"
+version = "0.1.0"
+edition = "2021"
+description = "Azure AD Authentication CLI using MSAL Rust"
+license = "MIT"
+
+[dependencies]
+clap = { version = "3.2.16", features = ["derive"] }
+msal-rust = { path = "../msal-rust" }
+tokio = { version = "1.0", features = ["full"] }
+serde_json = "1.0"
+
+[dev-dependencies]
+pretty_assertions = "1.2.1"
